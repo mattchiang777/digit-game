@@ -1,3 +1,5 @@
+// P1 - Input boxes should automatically prevent repeat digits
+// TODO: Show the clues and # of attempts
 import React, { useState, useEffect } from 'react';
 import RICIBs from 'react-individual-character-input-boxes';
 import logo from './jack.png';
@@ -15,14 +17,14 @@ function App() {
   const [userGuess, setUserGuess] = useState("");
 
   useEffect(() => {
-    console.log("Your clues: " + A + "A" + " " + B + "B");
+    if (A == 0 && B == 0) { return; }
     showResult();
-    resetHintState();
+    console.log("Your clues: " + A + "A" + " " + B + "B");
+    resetHintState(); // useState only fires if the the value you are updating the state with is different to the previous one 
   }, [A, B]);
 
   const handleUserInput = (str) => {
     setUserGuess(str);
-    console.log("output: " + str);
   }
 
   const handleSubmit = (event) => {
@@ -45,11 +47,6 @@ function App() {
   }
 
   function checkAnswer(arr) {
-    console.log("Your answer: " + arr);
-    checkDigits(arr);
-  }
-
-  function checkDigits(arr, callback) {
     for (let i = 0; i < arr.length; i++) {
       if (arr[i] == winningCombo[i]) { // Is the digit in the correct spot?
         setA(A => A + 1);
@@ -63,10 +60,9 @@ function App() {
   function showResult() {
     if (A == 4) {
       console.log("Correct! You win! It took you " + numAttempts + " attempts.");
+      return;
     } else {
       console.log("Your guess was wrong.");
-      
-      // resetHintState();
     }
   }
 
@@ -76,17 +72,23 @@ function App() {
   }
 
   return (
-    <div className="App">
-        <img src={logo} className="App-logo" alt="logo" />
+    <div className="text-center w-screen h-screen flex flex-col items-center justify-center bg-gray">
+      <img src={logo} className="App-logo mb-20" alt="logo" />
 
       <form onSubmit={handleSubmit}>
         <RICIBs
           amount={4}
           autoFocus
           handleOutputString={handleUserInput}
+          inputProps={[
+            { className: "bg-white border border-slate-300" },
+            { className: "bg-white border border-slate-300" },
+            { className: "bg-white border border-slate-300" },
+            { className: "bg-white border border-slate-300" },
+          ]}
           inputRegExp={/^[0-9]$/}
         />
-        <input type="submit" value="Submit" />
+        <input className="mt-8 px-8 py-2 text-white bg-sky-600 hover:bg-sky-700 active:bg-sky-600 rounded-full" type="submit" value="Submit" />
       </form>
       
       {/* <button onClick={() => generateWinningCombo()}>generateWinningCombo</button> */}

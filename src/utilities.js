@@ -10,9 +10,9 @@ export function generateWinningCombo() {
       if (!winningCombo.includes(nextDigit)) {
         winningCombo[i] = nextDigit;
       } else {
-        while (winningCombo.includes(nextDigit)) {
-          nextDigit = getRandomDigit();
-        }
+            while (winningCombo.includes(nextDigit)) {
+                nextDigit = getRandomDigit();
+            }
         winningCombo[i] = nextDigit;
       }
     }
@@ -31,42 +31,13 @@ function getRandomInt(min, max) {
 }
 
 export function isSubmissionValid(arr) {
-    // Submission must have 4 digits
-    if (arr.length != 4) { 
-        console.log("Number of digits entered was not 4");
-        return false;
-    }
     // Each digit must be unique
-    let digitDict = createDigitDict();
-    let keys = Object.keys(digitDict);
-    for (const el of arr) {
-        if (!keys.includes(el)) {
-            console.log("Invalid character entered is not 0-9");
-            return false;
-        }
-        if (digitDict[el] == true) {
+    for (let i = 0; i < 4; i++) {
+        let digitAppearances = arr.filter(el => el == arr[i]);
+        if (digitAppearances.length > 1) {
             console.log("Invalid submission. A digit is repeating");
             return false;
         }
-        digitDict[el] = true;
     }
-
-    // Double check
-    let checkedArr = [];
-    for (const digit of arr) {
-        // console.log(digit);
-        if (digitDict[digit] == true) {
-            checkedArr.push(digit);
-        }
-    }
-    // console.log("Do these digits match the user submission?: " + arr + " vs. " + checkedArr);
     return true;
-}
-
-function createDigitDict() {
-    let digitDict = {}
-    for (let i = 0; i < 10; i++) {
-        digitDict[i] = false;
-    }
-    return digitDict;
 }
