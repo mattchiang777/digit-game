@@ -1,3 +1,4 @@
+// P0 - Clear input boxes on submit
 // P1 - Input boxes should automatically prevent repeat digits
 // TODO: Show the clues and # of attempts
 import React, { useState, useEffect } from 'react';
@@ -11,16 +12,20 @@ console.log("The winning combo is " + winningCombo);
 
 function App() {
 
-  const [A, setA] = useState(0);
-  const [B, setB] = useState(0);
+  const [A, setA] = useState();
+  const [B, setB] = useState();
   const [numAttempts, setNumAttempts] = useState(0);
   const [userGuess, setUserGuess] = useState("");
+  const [guessList, setGuessList] = useState([]);
+  const [clueList, setClueList] = useState([]);
 
   useEffect(() => {
-    if (A == 0 && B == 0) { return; }
+    if (A == undefined || B == undefined) { return; }
     showResult();
     console.log("Your clues: " + A + "A" + " " + B + "B");
-    resetHintState(); // useState only fires if the the value you are updating the state with is different to the previous one 
+    let clue = [A, B];
+    setClueList(clueList => [clue, ...clueList]);
+    // resetHintState(); // useState only fires if the the value you are updating the state with is different to the previous one 
   }, [A, B]);
 
   const handleUserInput = (str) => {
@@ -34,13 +39,17 @@ function App() {
     let guess = userGuess.split("");
     // check that the submitted value is valid
     if (isSubmissionValid(guess)) {
+      resetHintState();
+      // Record the guess
+      setGuessList(guessList => [guess, ...guessList]);
+
       // turn guess into array of ints
       for (let i = 0; i < guess.length; i++) {
         guess[i] = parseInt(guess[i]);
       }
       // Increment number of attempts
       setNumAttempts(numAttempts + 1);
-      
+
       // compare against the winning combination checkAnswer()
       checkAnswer(guess);
     }
@@ -71,6 +80,20 @@ function App() {
     setB(0);
   }
 
+  const renderGuessList = (guessList) => guessList.reverse().map((guess) => // TODO: reverses the same array so the list will flip
+    (
+      <li>{guess}</li>
+    )
+  );
+
+  const renderCluelist = (clueList) => clueList.reverse().map((clue) =>
+    (
+      <li>{clue[0] + "A " + clue[1] + "B"}</li>
+    )
+  );
+
+
+
   return (
     <div className="text-center w-screen h-screen flex flex-col items-center justify-center bg-gray">
       <img src={logo} className="App-logo mb-20" alt="logo" />
@@ -89,9 +112,18 @@ function App() {
           inputRegExp={/^[0-9]$/}
         />
         <input className="mt-8 px-8 py-2 text-white bg-sky-600 hover:bg-sky-700 active:bg-sky-600 rounded-full" type="submit" value="Submit" />
+        
+        <p>Number of attempts: {numAttempts}</p>
+        <div className='flex flex-row justify-center'>
+          <ul className='p-6'>
+            {renderGuessList(guessList)}
+          </ul>
+          <ul className='p-6'>
+            {renderCluelist(clueList)}
+          </ul>
+        </div>
       </form>
       
-      {/* <button onClick={() => generateWinningCombo()}>generateWinningCombo</button> */}
     </div>
   );
 }
